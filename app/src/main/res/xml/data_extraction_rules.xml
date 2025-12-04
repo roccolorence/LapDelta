@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ExtensionInfo
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="lapdelta"
+    displayName="@string/extension_name"
+    icon="@mipmap/ic_launcher"
+    scansDevices="false"
+    mapLayer="false"
+    fitFile="false">
+
+    <DataType
+        typeId="lap_delta"
+        displayName="@string/lap_delta_name"
+        description="@string/lap_delta_description"
+        graphical="false"
+        icon="@mipmap/ic_launcher" />
+
+</ExtensionInfo>

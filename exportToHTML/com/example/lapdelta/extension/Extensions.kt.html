@@ -1,0 +1,57 @@
+<html>
+<head>
+<title>Extensions.kt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #7a7e85;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Extensions.kt</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com</span><span class="s2">.</span><span class="s1">example</span><span class="s2">.</span><span class="s1">lapdelta</span><span class="s2">.</span><span class="s1">extension</span>
+
+<span class="s1">import io</span><span class="s2">.</span><span class="s1">hammerhead</span><span class="s2">.</span><span class="s1">karooext</span><span class="s2">.</span><span class="s1">KarooSystemService</span>
+<span class="s1">import io</span><span class="s2">.</span><span class="s1">hammerhead</span><span class="s2">.</span><span class="s1">karooext</span><span class="s2">.</span><span class="s1">models</span><span class="s2">.</span><span class="s1">KarooEvent</span>
+<span class="s1">import io</span><span class="s2">.</span><span class="s1">hammerhead</span><span class="s2">.</span><span class="s1">karooext</span><span class="s2">.</span><span class="s1">models</span><span class="s2">.</span><span class="s1">OnStreamState</span>
+<span class="s1">import io</span><span class="s2">.</span><span class="s1">hammerhead</span><span class="s2">.</span><span class="s1">karooext</span><span class="s2">.</span><span class="s1">models</span><span class="s2">.</span><span class="s1">StreamState</span>
+<span class="s1">import kotlinx</span><span class="s2">.</span><span class="s1">coroutines</span><span class="s2">.</span><span class="s1">channels</span><span class="s2">.</span><span class="s1">awaitClose</span>
+<span class="s1">import kotlinx</span><span class="s2">.</span><span class="s1">coroutines</span><span class="s2">.</span><span class="s1">channels</span><span class="s2">.</span><span class="s1">trySendBlocking</span>
+<span class="s1">import kotlinx</span><span class="s2">.</span><span class="s1">coroutines</span><span class="s2">.</span><span class="s1">flow</span><span class="s2">.</span><span class="s1">Flow</span>
+<span class="s1">import kotlinx</span><span class="s2">.</span><span class="s1">coroutines</span><span class="s2">.</span><span class="s1">flow</span><span class="s2">.</span><span class="s1">callbackFlow</span>
+
+<span class="s3">// Stream data for a built-in Karoo data type (like lap time, last lap time, etc.)</span>
+<span class="s0">fun </span><span class="s1">KarooSystemService</span><span class="s2">.</span><span class="s1">streamDataFlow</span><span class="s2">(</span><span class="s1">dataTypeId: String</span><span class="s2">)</span><span class="s1">: Flow</span><span class="s2">&lt;</span><span class="s1">StreamState</span><span class="s2">&gt; {</span>
+    <span class="s0">return </span><span class="s1">callbackFlow </span><span class="s2">{</span>
+        <span class="s0">val </span><span class="s1">listenerId </span><span class="s2">=</span>
+            <span class="s1">addConsumer</span><span class="s2">(</span><span class="s1">OnStreamState</span><span class="s2">.</span><span class="s1">StartStreaming</span><span class="s2">(</span><span class="s1">dataTypeId</span><span class="s2">)) { </span><span class="s1">event: OnStreamState </span><span class="s2">-&gt;</span>
+                <span class="s1">trySendBlocking</span><span class="s2">(</span><span class="s1">event</span><span class="s2">.</span><span class="s1">state</span><span class="s2">)</span>
+            <span class="s2">}</span>
+        <span class="s1">awaitClose </span><span class="s2">{</span>
+            <span class="s1">removeConsumer</span><span class="s2">(</span><span class="s1">listenerId</span><span class="s2">)</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+
+<span class="s3">// (extra utility if you want KarooEvent streams later)</span>
+<span class="s1">inline </span><span class="s0">fun </span><span class="s2">&lt;</span><span class="s1">reified T : KarooEvent</span><span class="s2">&gt; </span><span class="s1">KarooSystemService</span><span class="s2">.</span><span class="s1">consumerFlow</span><span class="s2">()</span><span class="s1">: Flow</span><span class="s2">&lt;</span><span class="s1">T</span><span class="s2">&gt; {</span>
+    <span class="s0">return </span><span class="s1">callbackFlow </span><span class="s2">{</span>
+        <span class="s0">val </span><span class="s1">listenerId </span><span class="s2">= </span><span class="s1">addConsumer</span><span class="s2">&lt;</span><span class="s1">T</span><span class="s2">&gt; {</span>
+            <span class="s1">trySend</span><span class="s2">(</span><span class="s1">it</span><span class="s2">)</span>
+        <span class="s2">}</span>
+        <span class="s1">awaitClose </span><span class="s2">{</span>
+            <span class="s1">removeConsumer</span><span class="s2">(</span><span class="s1">listenerId</span><span class="s2">)</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+
+
+</pre>
+</body>
+</html>

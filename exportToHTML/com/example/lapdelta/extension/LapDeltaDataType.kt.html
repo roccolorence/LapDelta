@@ -1,0 +1,91 @@
+<html>
+<head>
+<title>LapDeltaDataType.kt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #5f826b; font-style: italic;}
+.s4 { color: #7a7e85;}
+.s5 { color: #6aab73;}
+.s6 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+LapDeltaDataType.kt</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com</span><span class="s2">.</span><span class="s1">example</span><span class="s2">.</span><span class="s1">lapdelta</span><span class="s2">.</span><span class="s1">extension</span>
+
+<span class="s1">import io</span><span class="s2">.</span><span class="s1">hammerhead</span><span class="s2">.</span><span class="s1">karooext</span><span class="s2">.</span><span class="s1">KarooSystemService</span>
+<span class="s1">import io</span><span class="s2">.</span><span class="s1">hammerhead</span><span class="s2">.</span><span class="s1">karooext</span><span class="s2">.</span><span class="s1">data</span><span class="s2">.</span><span class="s1">DataStream</span>
+<span class="s1">import io</span><span class="s2">.</span><span class="s1">hammerhead</span><span class="s2">.</span><span class="s1">karooext</span><span class="s2">.</span><span class="s1">data</span><span class="s2">.</span><span class="s1">NumericValue</span>
+<span class="s1">import io</span><span class="s2">.</span><span class="s1">hammerhead</span><span class="s2">.</span><span class="s1">karooext</span><span class="s2">.</span><span class="s1">extension</span><span class="s2">.</span><span class="s1">DataTypeImpl</span>
+
+<span class="s3">/**</span>
+ <span class="s3">* DataType for Lap Delta — currently just outputs a</span>
+ <span class="s3">* simple counter so we can verify the field works on Karoo.</span>
+ <span class="s3">*</span>
+ <span class="s3">* The important bit is the TYPE_ID string, which must match</span>
+ <span class="s3">* the typeId in res/xml/extension_info.xml.</span>
+ <span class="s3">*/</span>
+<span class="s0">class </span><span class="s1">LapDeltaDataType</span><span class="s2">(</span>
+    <span class="s1">private </span><span class="s0">val </span><span class="s1">karooSystem: KarooSystemService</span><span class="s2">,</span>
+    <span class="s1">extensionId: String</span>
+<span class="s2">) </span><span class="s1">: DataTypeImpl</span><span class="s2">(</span>
+    <span class="s1">extensionId</span><span class="s2">,   </span><span class="s4">// extension id (&quot;lapdelta&quot;)</span>
+    <span class="s1">TYPE_ID</span><span class="s2">,       </span><span class="s4">// data type id (&quot;lap_delta&quot;)</span>
+    <span class="s0">false          </span><span class="s4">// graphical = false (numeric field)</span>
+<span class="s2">) {</span>
+
+    <span class="s1">companion </span><span class="s0">object </span><span class="s2">{</span>
+        <span class="s4">// MUST match &lt;DataType typeId=&quot;lap_delta&quot; .../&gt; in extension_info.xml</span>
+        <span class="s1">const </span><span class="s0">val </span><span class="s1">TYPE_ID </span><span class="s2">= </span><span class="s5">&quot;lap_delta&quot;</span>
+    <span class="s2">}</span>
+
+    <span class="s1">override </span><span class="s0">fun </span><span class="s1">onCreateDataStream</span><span class="s2">(</span><span class="s1">subscriber: DataStream</span><span class="s2">.</span><span class="s1">Subscriber</span><span class="s2">)</span><span class="s1">: DataStream </span><span class="s2">{</span>
+        <span class="s4">// Create a stream that feeds values to the data field</span>
+        <span class="s0">return </span><span class="s1">LapDeltaStream</span><span class="s2">(</span>
+            <span class="s1">karooSystem </span><span class="s2">= </span><span class="s1">karooSystem</span><span class="s2">,</span>
+            <span class="s1">subscriber </span><span class="s2">= </span><span class="s1">subscriber</span>
+        <span class="s2">)</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+
+<span class="s3">/**</span>
+ <span class="s3">* Simple test stream: counts 1, 2, 3, ... once per update.</span>
+ <span class="s3">* Once this is working on the Karoo, we can swap the logic</span>
+ <span class="s3">* to real lap-delta timing.</span>
+ <span class="s3">*/</span>
+<span class="s0">class </span><span class="s1">LapDeltaStream</span><span class="s2">(</span>
+    <span class="s1">private </span><span class="s0">val </span><span class="s1">karooSystem: KarooSystemService</span><span class="s2">,</span>
+    <span class="s1">subscriber: DataStream</span><span class="s2">.</span><span class="s1">Subscriber</span>
+<span class="s2">) </span><span class="s1">: DataStream</span><span class="s2">(</span><span class="s1">subscriber</span><span class="s2">) {</span>
+
+    <span class="s1">private </span><span class="s0">var </span><span class="s1">counter </span><span class="s2">= </span><span class="s6">0</span>
+
+    <span class="s1">override </span><span class="s0">fun </span><span class="s1">onStart</span><span class="s2">() {</span>
+        <span class="s1">counter </span><span class="s2">= </span><span class="s6">0</span>
+    <span class="s2">}</span>
+
+    <span class="s1">override </span><span class="s0">fun </span><span class="s1">onUpdate</span><span class="s2">() {</span>
+        <span class="s1">counter </span><span class="s2">+= </span><span class="s6">1</span>
+
+        <span class="s4">// Send a numeric value to the Karoo field</span>
+        <span class="s1">subscriber</span><span class="s2">.</span><span class="s1">onNext</span><span class="s2">(</span>
+            <span class="s1">NumericValue</span><span class="s2">(</span>
+                <span class="s1">counter</span><span class="s2">.</span><span class="s1">toFloat</span><span class="s2">()</span>
+            <span class="s2">)</span>
+        <span class="s2">)</span>
+    <span class="s2">}</span>
+
+    <span class="s1">override </span><span class="s0">fun </span><span class="s1">onStop</span><span class="s2">() {</span>
+        <span class="s4">// nothing special for now</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>

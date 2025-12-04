@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">LapDelta</string>
+
+    <string name="extension_name">Lap Delta Extension</string>
+    <string name="lap_delta_name">Lap Delta</string>
+    <string name="lap_delta_description">Difference between current lap and last lap</string>
+</resources>
