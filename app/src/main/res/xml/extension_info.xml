@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<ExtensionInfo
+    id="lapdelta"
+    displayName="@string/extension_name"
+    icon="@drawable/ic_launcher_foreground"
+    scansDevices="false">
 
-</PreferenceScreen>
+    <DataType
+        typeId="lap_delta"
+        displayName="@string/lap_delta_name"
+        description="@string/lap_delta_description"
+        graphical="false"
+        icon="@drawable/ic_launcher_foreground" />
+
+</ExtensionInfo>
