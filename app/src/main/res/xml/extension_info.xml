@@ -9,7 +9,7 @@
         typeId="lap_delta"
         displayName="@string/lap_delta_name"
         description="@string/lap_delta_description"
-        graphical="false"
+        graphical="true"
         icon="@drawable/ic_launcher_foreground" />
 
 </ExtensionInfo>
